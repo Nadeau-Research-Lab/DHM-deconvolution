@@ -561,6 +561,8 @@ public class Deconvolve_Image_Utils {
 	
 		ImageStack stack = new ImageStack(width, height);
 		ImageProcessor ref = new FloatProcessor(testMat[0][0]);
+        double min = Double.POSITIVE_INFINITY;
+        double max = -Double.POSITIVE_INFINITY;
 		for (int i = 1; i <= frames; i++) 
 			for (int j = 1; j <= slices; j++) {
 				ImageProcessor ip = new FloatProcessor(testMat[i-1][j-1]);
@@ -573,11 +575,14 @@ public class Deconvolve_Image_Utils {
 					else
 						ip = ip.convertToByte(true);
 				
+                double this_min = ip.getMin();
+                double this_max = ip.getMax();
+                if (this_min < min) min = this_min;
+                if (this_max > max) max = this_max;
 				stack.addSlice(ip);
-				if (i == Math.round(frames/2) && j == Math.round(slices/2))
-					ref = ip;
 			}
-		stack.update(ref);
+        // The hackiest of hacks
+        stack.update(new FloatProcessor(new float[][]{{(float)min, (float)max}}));
 		ImagePlus result = new ImagePlus(title, stack);
 		if (frames > 1) {
 			return HyperStackConverter.toHyperStack(result, 1, slices, frames);

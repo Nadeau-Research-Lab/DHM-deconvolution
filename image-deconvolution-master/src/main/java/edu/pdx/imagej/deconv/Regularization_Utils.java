@@ -234,7 +234,7 @@ public class Regularization_Utils {
                 diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
                 diu.matrixOperations(wMatTilde[i], auxiliaryMat, wMatTilde[i], "add");
                 
-                wMatTilde[i] = diu.incrementComplex(wMatTilde[i], nonlinearity);
+                diu.incrementComplex(wMatTilde[i], wMatTilde[i], nonlinearity);
                 diu.matrixOperations(identityMat, wMatTilde[i], wMatTilde[i], "divide");
             }
             else {
@@ -264,7 +264,7 @@ public class Regularization_Utils {
                 diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
                 diu.matrixOperations(wMat[i], auxiliaryMat, wMat[i], "add");
             
-                wMat[i] = diu.incrementComplex(wMat[i], nonlinearity);
+                diu.incrementComplex(wMat[i], wMat[i], nonlinearity);
                 diu.matrixOperations(identityMat, wMat[i], wMat[i], "divide");
             }
         }   
@@ -366,7 +366,7 @@ public class Regularization_Utils {
             dMat[i] = diu.scaleMat(nPrime[i], 100*smooth);
             diu.matrixOperations(dMat[i], diu.scaleMat(wMat[i], smooth), dMat[i], "add");
             diu.matrixOperations(dMat[i], diu.scaleMat(auxiliaryMat, smooth), dMat[i], "add");
-            dMat[i] = diu.incrementComplex(dMat[i], H0);
+            diu.incrementComplex(dMat[i], dMat[i], H0);
         }
     }
     

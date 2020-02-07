@@ -53,10 +53,11 @@ public class Wiener_Utils {
         
         float[][][] psf2 = new float[slices][height][width*2];
         diu.matrixOperations(psfComplex, psfConj, psf2, "multiply");
+        diu.incrementComplex(psf2, psf2, beta);
         for (int i = 0; i < frames; i++) {
             // perform deconvolution operations
             diu.matrixOperations(psfConj, imgComplex[i], imgComplex[i], "multiply");    
-            diu.matrixOperations(imgComplex[i], diu.incrementComplex(psf2, beta), imgComplex[i], "divide");
+            diu.matrixOperations(imgComplex[i], psf2, imgComplex[i], "divide");
             fft3D.complexInverse(imgComplex[i], true);
             
             // put complex matrices back into real matrices and format image
@@ -105,10 +106,11 @@ public class Wiener_Utils {
         
         float[][][] psf2 = new float[slices][height][width*2];
         diu.matrixOperations(psfComplex, psfConj, psf2, "multiply");
+        diu.incrementComplex(psf2, psf2, beta);
         // same deconvolution procedure as above
         for (int i = 0; i < frames; i++) {
             diu.matrixOperations(psfConj, imgComplex[i], imgComplex[i], "multiply");    
-            diu.matrixOperations(imgComplex[i], diu.incrementComplex(psf2, beta), imgComplex[i], "divide");
+            diu.matrixOperations(imgComplex[i], psf2, imgComplex[i], "divide");
             fft3D.complexInverse(imgComplex[i], true);
             
             // put complex matrices back into real matrices and format image

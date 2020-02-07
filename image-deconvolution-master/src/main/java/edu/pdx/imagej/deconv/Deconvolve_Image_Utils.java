@@ -406,44 +406,38 @@ public class Deconvolve_Image_Utils {
         return ret;
     }
     
-    static public float[][][] increment(float[][][] mat, float inc) {
+    static public void increment(float[][][] mat, float[][][] ret, float inc) {
         int slices = mat.length;
         int height = mat[0].length;
         int width = mat[0][0].length;
-        float[][][] ret = new float[slices][height][width];
+        //float[][][] ret = new float[slices][height][width];
         
         for (int i = 0; i < slices; i++)
             for (int j = 0; j < height; j++)
                 for (int k = 0; k < width; k++)
                     ret[i][j][k] = mat[i][j][k] + inc;
-        
-        return ret;
     }
     
-    static public float[][][][] increment(float[][][][] mat, float inc) {
+    static public void increment(float[][][][] mat, float[][][][] ret, float inc) {
         int frames = mat.length;
-        float[][][][] ret = new float[frames][mat[0].length][mat[0][0].length][mat[0][0][0].length];
+        //float[][][][] ret = new float[frames][mat[0].length][mat[0][0].length][mat[0][0][0].length];
         
         for (int i = 0; i < frames; i++)
-            ret[i] = increment(mat[i], inc);
-        
-        return ret;
+            increment(mat[i], ret[i], inc);
     }
     
     // adds inc to each real element of a complex 3D matrix
-    static public float[][][] incrementComplex(float[][][] mat, float inc) {
+    static public void incrementComplex(float[][][] mat, float[][][] ret, float inc) {
         int slices = mat.length;
         int height = mat[0].length;
         int width = (int)(mat[0][0].length / 2);
-        float[][][] ret = new float[slices][height][2*width];
+        //float[][][] ret = new float[slices][height][2*width];
         for (int i = 0; i < slices; i++)
             for (int j = 0; j < height; j++)
                 for (int k = 0; k < width; k++) {
                     ret[i][j][2*k] = mat[i][j][2*k] + inc; 
                     ret[i][j][2*k + 1] = mat[i][j][2*k + 1];
                 }
-        
-        return ret;
     }
     
     // divides, multiplies, subtracts, or adds corresponding elements in two 3D matrices

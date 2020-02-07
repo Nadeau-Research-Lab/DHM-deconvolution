@@ -15,7 +15,7 @@ import java.math.RoundingMode;
 public class Deconvolve_Image_Utils {
 	
 	// returns (a + b*i) = (c + d*i)/(e + f*i) as {a, b}
-	private float[] complexDivide(float c, float d, float e, float f) {
+	static private float[] complexDivide(float c, float d, float e, float f) {
 		double denom = Math.pow(e, 2) + Math.pow(f, 2);
 		float re = (float)((c*e + d*f) / denom);
 		float im = (float)((d*e - c*f) / denom);
@@ -28,7 +28,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// handle complex division with big numbers
-	private float[] complexDivideBig(float c, float d, float e, float f) {
+	static private float[] complexDivideBig(float c, float d, float e, float f) {
 		try {
 			BigDecimal bigC = BigDecimal.valueOf((double)c);
 			BigDecimal bigD = BigDecimal.valueOf((double)d);
@@ -49,7 +49,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// returns (a + b*i) = (c + d*i)*(e + f*i) as {a, b}
-	private float[] complexMult(float c, float d, float e, float f) {
+	static private float[] complexMult(float c, float d, float e, float f) {
 		float re = (c*e - d*f);
 		float im = (c*f + d*e);
 		
@@ -61,7 +61,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// handle complex multiplication with big numbers
-	private float[] complexMultBig(float c, float d, float e, float f) {
+	static private float[] complexMultBig(float c, float d, float e, float f) {
 		try {
 			BigDecimal bigC = BigDecimal.valueOf((double)c);
 			BigDecimal bigD = BigDecimal.valueOf((double)d);
@@ -81,7 +81,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// returns (a + b*i) = (c + d*i) - (e + f*i) as {a, b}
-	private float[] complexSub(float c, float d, float e, float f) {
+	static private float[] complexSub(float c, float d, float e, float f) {
 		float re = c - e;
 		float im = d - f;
 		float[] ret = {re, im};
@@ -93,7 +93,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// handle complex subtraction with big numbers
-	private float[] complexSubBig(float c, float d, float e, float f) {
+	static private float[] complexSubBig(float c, float d, float e, float f) {
 		try {
 			BigDecimal bigC = BigDecimal.valueOf((double)c);
 			BigDecimal bigD = BigDecimal.valueOf((double)d);
@@ -113,7 +113,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// returns (a + b*i) = (c + d*i) + (e + f*i) as {a, b}
-	private float[] complexAdd(float c, float d, float e, float f) {
+	static private float[] complexAdd(float c, float d, float e, float f) {
 		float re = c + e;
 		float im = d + f;
 		float[] ret = {re, im};
@@ -125,7 +125,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// handle complex addition with big numbers
-	private float[] complexAddBig(float c, float d, float e, float f) {
+	static private float[] complexAddBig(float c, float d, float e, float f) {
 		try {
 			BigDecimal bigC = BigDecimal.valueOf((double)c);
 			BigDecimal bigD = BigDecimal.valueOf((double)d);
@@ -145,7 +145,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// Show window to select an image file. Returns the file path as a string.
-	public String getPath(String message) {
+	static public String getPath(String message) {
 		String path;
 		OpenDialog od = new OpenDialog(message);
 		path = od.getPath();
@@ -154,7 +154,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// Show window to select a directory. Returns the path as a string.
-	public String getDirectory(String message) {
+	static public String getDirectory(String message) {
 		String path;
 		DirectoryChooser dc = new DirectoryChooser(message);
 		path = dc.getDirectory();
@@ -163,13 +163,13 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// Takes an image stack and returns a float 3D matrix
-	public float[][][] getMatrix3D(ImagePlus image) {
+	static public float[][][] getMatrix3D(ImagePlus image) {
 		float[][][] mat = getMatrix4D(image)[0];
 		return mat;
 	}
 	
 	// Takes an image stack and returns a float 4D matrix
-	public float[][][][] getMatrix4D(ImagePlus image) {
+	static public float[][][][] getMatrix4D(ImagePlus image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		int slices = image.getNSlices();
@@ -192,7 +192,7 @@ public class Deconvolve_Image_Utils {
 	// Takes 3D matrix and puts it into a form compatible with the FFT package
 	// Even columns are the real parts of data entries, and odd columns are the imaginary parts.	
 	// This method assumes a phase of zero, so all the data is real.
-	public float[][][] toFFTform(float[][][] mat) {
+	static public float[][][] toFFTform(float[][][] mat) {
 		int a_slices = mat.length;
 		int a_height = mat[0].length;
 		int a_width = mat[0][0].length;
@@ -210,7 +210,7 @@ public class Deconvolve_Image_Utils {
 		return ret;
 	}
 	
-	public float[][][][] toFFTform(float[][][][] mat) {
+	static public float[][][][] toFFTform(float[][][][] mat) {
 		int a_frames = mat.length;
 		int a_slices = mat[0].length;
 		int a_height = mat[0][0].length;
@@ -225,7 +225,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// given an amplitude and phase matrix, build a complex matrix compatible with the FFT package
-	public float[][][] toFFTform(float[][][] amp, float[][][] phase) {
+	static public float[][][] toFFTform(float[][][] amp, float[][][] phase) {
 		int a_slices = amp.length;
 		int a_height = amp[0].length;
 		int a_width = amp[0][0].length;
@@ -245,7 +245,7 @@ public class Deconvolve_Image_Utils {
 		return ret;
 	}
 	
-	public float[][][][] toFFTform(float[][][][] amp, float[][][][] phase) {
+	static public float[][][][] toFFTform(float[][][][] amp, float[][][][] phase) {
 		int a_frames = amp.length;
 		int a_slices = amp[0].length;
 		int a_height = amp[0][0].length;
@@ -260,7 +260,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// given a real and imaginary matrix, build a complex matrix compatible with the FFT package
-	public float[][][] toFFTformRect(float[][][] reMat, float[][][] imMat) {
+	static public float[][][] toFFTformRect(float[][][] reMat, float[][][] imMat) {
 		int a_slices = reMat.length;
 		int a_height = reMat[0].length;
 		int a_width = reMat[0][0].length;
@@ -280,7 +280,7 @@ public class Deconvolve_Image_Utils {
 		return ret;
 	}
 	
-	public float[][][][] toFFTformRect(float[][][][] reMat, float[][][][] imMat) {
+	static public float[][][][] toFFTformRect(float[][][][] reMat, float[][][][] imMat) {
 		int a_frames = reMat.length;
 		int a_slices = reMat[0].length;
 		int a_height = reMat[0][0].length;
@@ -295,7 +295,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// takes a complex matrix and squish it back to a simple amplitude matrix
-	public float[][][] getAmplitudeMat(float[][][] mat) {
+	static public float[][][] getAmplitudeMat(float[][][] mat) {
 		int slices = mat.length;
 		int height = mat[0].length;
 		// the complex matrix has twice the width as the output matrix
@@ -309,7 +309,7 @@ public class Deconvolve_Image_Utils {
 		return ret;
 	}
 	
-	public float[][][][] getAmplitudeMat(float[][][][] mat) {
+	static public float[][][][] getAmplitudeMat(float[][][][] mat) {
 		int a_frames = mat.length;
 		int a_slices = mat[0].length;
 		int a_height = mat[0][0].length;
@@ -323,7 +323,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// takes a complex matrix and returns a phase matrix
-	public float[][][] getPhaseMat(float[][][] mat) {
+	static public float[][][] getPhaseMat(float[][][] mat) {
 		int slices = mat.length;
 		int height = mat[0].length;
 		// the complex matrix has twice the width as the output matrix
@@ -337,7 +337,7 @@ public class Deconvolve_Image_Utils {
 		return ret;
 	}
 	
-	public float[][][][] getPhaseMat(float[][][][] mat) {
+	static public float[][][][] getPhaseMat(float[][][][] mat) {
 		int a_frames = mat.length;
 		int a_slices = mat[0].length;
 		int a_height = mat[0][0].length;
@@ -351,7 +351,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// takes a complex matrix and returns just the real parts
-	public float[][][] getReMat(float[][][] mat) {
+	static public float[][][] getReMat(float[][][] mat) {
 		int slices = mat.length;
 		int height = mat[0].length;
 		// the complex matrix has twice the width as the output matrix
@@ -365,7 +365,7 @@ public class Deconvolve_Image_Utils {
 		return ret;
 	}
 	
-	public float[][][][] getReMat(float[][][][] mat) {
+	static public float[][][][] getReMat(float[][][][] mat) {
 		int a_frames = mat.length;
 		int a_slices = mat[0].length;
 		int a_height = mat[0][0].length;
@@ -379,7 +379,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// takes a complex matrix and returns just the imaginary parts
-	public float[][][] getImMat(float[][][] mat) {
+	static public float[][][] getImMat(float[][][] mat) {
 		int slices = mat.length;
 		int height = mat[0].length;
 		// the complex matrix has twice the width as the output matrix
@@ -393,7 +393,7 @@ public class Deconvolve_Image_Utils {
 		return ret;
 	}
 	
-	public float[][][][] getImMat(float[][][][] mat) {
+	static public float[][][][] getImMat(float[][][][] mat) {
 		int a_frames = mat.length;
 		int a_slices = mat[0].length;
 		int a_height = mat[0][0].length;
@@ -406,7 +406,7 @@ public class Deconvolve_Image_Utils {
 		return ret;
 	}
 	
-	public float[][][] increment(float[][][] mat, float inc) {
+	static public float[][][] increment(float[][][] mat, float inc) {
 		int slices = mat.length;
 		int height = mat[0].length;
 		int width = mat[0][0].length;
@@ -420,7 +420,7 @@ public class Deconvolve_Image_Utils {
 		return ret;
 	}
 	
-	public float[][][][] increment(float[][][][] mat, float inc) {
+	static public float[][][][] increment(float[][][][] mat, float inc) {
 		int frames = mat.length;
 		float[][][][] ret = new float[frames][mat[0].length][mat[0][0].length][mat[0][0][0].length];
 		
@@ -431,7 +431,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// adds inc to each real element of a complex 3D matrix
-	public float[][][] incrementComplex(float[][][] mat, float inc) {
+	static public float[][][] incrementComplex(float[][][] mat, float inc) {
 		int slices = mat.length;
 		int height = mat[0].length;
 		int width = (int)(mat[0][0].length / 2);
@@ -448,11 +448,10 @@ public class Deconvolve_Image_Utils {
 	
 	// divides, multiplies, subtracts, or adds corresponding elements in two 3D matrices
 	// these are complex matrices, so additional operations are required
-	public float[][][] matrixOperations(float[][][] mat1, float[][][] mat2, String operation) {
+	static public void matrixOperations(float[][][] mat1, float[][][] mat2, float[][][] retMat, String operation) {
 		int slices = mat1.length;
 		int height = mat1[0].length;
 		int width = (int)(mat1[0][0].length / 2);
-		float[][][] retMat = new float[slices][height][2*width];
 		
 		float c; // Re of mat1 element
 		float d; // Im of mat1 element
@@ -460,44 +459,74 @@ public class Deconvolve_Image_Utils {
 		float f; // Im of mat2 element
 		float[] result; // {Re, Im}
 		
-		for (int i = 0; i < slices; i++)
-			for (int j = 0; j < height; j++)
-				for (int k = 0; k < width; k++) {
-					c = mat1[i][j][2*k];
-					d = mat1[i][j][2*k+1];
-					e = mat2[i][j][2*k];
-					f = mat2[i][j][2*k + 1];
-					if (operation == "divide") {
-						result = complexDivide(c, d, e, f);
-						// real part of dividing two complex numbers
-						retMat[i][j][2*k] = result[0];
-						// imaginary part of dividing two complex numbers
-						retMat[i][j][2*k + 1] = result[1];
-					}
-					else if (operation == "multiply") {
-						result = complexMult(c, d, e, f);
-						// real part of multiplying two complex numbers
-						retMat[i][j][2*k] = result[0];
-						// imaginary part of multiplying two complex numbers
-						retMat[i][j][2*k + 1] = result[1];
-					}
-					else if (operation == "subtract") {
-						result = complexSub(c, d, e, f);
-						retMat[i][j][2*k] = result[0];
-						retMat[i][j][2*k + 1] = result[1];
-					}
-					else {
-						result = complexAdd(c, d, e, f);
-						retMat[i][j][2*k] = result[0];
-						retMat[i][j][2*k + 1] = result[1];
-					}
-				}
-		
-		return retMat;
+        if (operation == "divide") {
+            for (int i = 0; i < slices; i++) {
+                for (int j = 0; j < height; j++) {
+                    for (int k = 0; k < width; k++) {
+                        c = mat1[i][j][2*k];
+                        d = mat1[i][j][2*k+1];
+                        e = mat2[i][j][2*k];
+                        f = mat2[i][j][2*k + 1];
+                        result = complexDivide(c, d, e, f);
+                        // real part of dividing two complex numbers
+                        retMat[i][j][2*k] = result[0];
+                        // imaginary part of dividing two complex numbers
+                        retMat[i][j][2*k + 1] = result[1];
+                    }
+                }
+            }
+        }
+        else if (operation == "multiply") {
+            for (int i = 0; i < slices; i++) {
+                for (int j = 0; j < height; j++) {
+                    for (int k = 0; k < width; k++) {
+                        c = mat1[i][j][2*k];
+                        d = mat1[i][j][2*k+1];
+                        e = mat2[i][j][2*k];
+                        f = mat2[i][j][2*k + 1];
+                        result = complexMult(c, d, e, f);
+                        // real part of multiplying two complex numbers
+                        retMat[i][j][2*k] = result[0];
+                        // imaginary part of multiplying two complex numbers
+                        retMat[i][j][2*k + 1] = result[1];
+                    }
+                }
+            }
+        }
+        else if (operation == "subtract") {
+            for (int i = 0; i < slices; i++) {
+                for (int j = 0; j < height; j++) {
+                    for (int k = 0; k < width; k++) {
+                        c = mat1[i][j][2*k];
+                        d = mat1[i][j][2*k+1];
+                        e = mat2[i][j][2*k];
+                        f = mat2[i][j][2*k + 1];
+                        result = complexSub(c, d, e, f);
+                        retMat[i][j][2*k] = result[0];
+                        retMat[i][j][2*k + 1] = result[1];
+                    }
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < slices; i++) {
+                for (int j = 0; j < height; j++) {
+                    for (int k = 0; k < width; k++) {
+                        c = mat1[i][j][2*k];
+                        d = mat1[i][j][2*k+1];
+                        e = mat2[i][j][2*k];
+                        f = mat2[i][j][2*k + 1];
+                        result = complexAdd(c, d, e, f);
+                        retMat[i][j][2*k] = result[0];
+                        retMat[i][j][2*k + 1] = result[1];
+                    }
+                }
+            }
+        }
 	}
 	
 	// returns the complex conjugate of the input matrix
-	public float[][][] complexConj(float[][][] mat) {
+	static public float[][][] complexConj(float[][][] mat) {
 		int slices = mat.length;
 		int height = mat[0].length;
 		int width = (int)(mat[0][0].length / 2);
@@ -514,7 +543,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// scales a  matrix (can be real or complex)
-	public float[][][] scaleMat(float[][][] mat, float scale) {
+	static public float[][][] scaleMat(float[][][] mat, float scale) {
 		int slices = mat.length;
 		int height = mat[0].length;
 		int width = mat[0][0].length;
@@ -529,7 +558,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// scales a  matrix (can be real or complex)
-	public float[][][][] scaleMat(float[][][][] mat, float scale) {
+	static public float[][][][] scaleMat(float[][][][] mat, float scale) {
 		int frames = mat.length;
 		int slices = mat[0].length;
 		int height = mat[0][0].length;
@@ -547,13 +576,13 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// covert 3D matrix to ImagePlus image
-	public ImagePlus reassign(float[][][] testMat, String impType, String title) {
+	static public ImagePlus reassign(float[][][] testMat, String impType, String title) {
 		float [][][][] four_dim = {testMat};
 		return reassign(four_dim, impType, title);
 	}
 	
 	// covert 4D matrix to ImagePlus image
-	public ImagePlus reassign(float[][][][] testMat, String impType, String title) {
+	static public ImagePlus reassign(float[][][][] testMat, String impType, String title) {
 		int frames = testMat.length;
 		int width = testMat[0][0][0].length;
 		int height = testMat[0][0].length;
@@ -592,7 +621,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// shift a 3D matrix so that all values fall between newMin and newMax
-	public void linearShift (float[][][] mat, float newMin, float newMax) {
+	static public void linearShift (float[][][] mat, float newMin, float newMax) {
 		float min = mat[0][0][0];
 		float max = mat[0][0][0];
 		for (int i = 0; i < mat.length; i++)
@@ -611,7 +640,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// invert an entire image
-    public void invert(ImagePlus imp) {
+    static public void invert(ImagePlus imp) {
     	ImageProcessor ip;
 		for (int i = 1; i <= imp.getStackSize(); i++) {
 			ip = imp.getStack().getProcessor(i);
@@ -620,7 +649,7 @@ public class Deconvolve_Image_Utils {
       }
     
     // normalize a real matrix so that all pixels add to 1
-    public void normalize(float[][][] mat) {
+    static public void normalize(float[][][] mat) {
     	float total = 0;
     	for (int i = 0; i < mat.length; i++)
     		for (int j = 0; j < mat[0].length; j++)
@@ -634,7 +663,7 @@ public class Deconvolve_Image_Utils {
     }
     
     // normalize a real matrix and imaginary matrix so that all amplitudes add to 1
-    public void normalize(float[][][] matRe, float[][][] matIm) {
+    static public void normalize(float[][][] matRe, float[][][] matIm) {
     	float total = 0;
     	for (int i = 0; i < matRe.length; i++)
     		for (int j = 0; j < matRe[0].length; j++)
@@ -650,7 +679,7 @@ public class Deconvolve_Image_Utils {
     }
     
     // after taking the inverse Fourier transform, the quadrants of the image are flipped around for some reason. This puts it back to normal.
-    public float[][][] formatIFFT(float[][][] ampMat) {
+    static public float[][][] formatIFFT(float[][][] ampMat) {
     	int slices = ampMat.length;
     	int height = ampMat[0].length;
     	int width = ampMat[0][0].length;
@@ -688,7 +717,7 @@ public class Deconvolve_Image_Utils {
     	return reformat;
     }
     
-	public float[][][][] formatIFFT(float[][][][] ampMat) {
+	static public float[][][][] formatIFFT(float[][][][] ampMat) {
 		int frames = ampMat.length;
 		float[][][][] ret = new float[frames][ampMat[0].length][ampMat[0][0].length][ampMat[0][0][0].length];
 		for (int i = 0; i < frames; i++)
@@ -698,7 +727,7 @@ public class Deconvolve_Image_Utils {
 	}
     
     // convolve two matrices by elementwise multiplication in Fourier space. mat1, mat2, and ret are all in FFT form
-	public float[][][] fourierConvolve(float[][][] mat1, float[][][] mat2) {
+	static public float[][][] fourierConvolve(float[][][] mat1, float[][][] mat2) {
 		FloatFFT_3D fft = new FloatFFT_3D((long)mat1.length, (long)mat1[0].length, (long)mat1[0][0].length/2);
 		float[][][] mat1FT = new float[mat1.length][mat1[0].length][mat1[0][0].length];
 		float[][][] mat2FT = new float[mat1.length][mat1[0].length][mat1[0][0].length];
@@ -715,7 +744,7 @@ public class Deconvolve_Image_Utils {
 		fft.complexForward(mat1FT);
 		fft.complexForward(mat2FT);
 		
-		retMat = matrixOperations(mat1FT, mat2FT, "multiply");
+		matrixOperations(mat1FT, mat2FT, retMat, "multiply");
 		fft.complexInverse(retMat, true);
 		
 		float[][][] reMat = getReMat(retMat);
@@ -729,7 +758,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// normalize a convolved image so it has the same minimum and maximum amplitude as the original image
-	public void fitConvolution(float[][][] convolved, float[][][] original) {
+	static public void fitConvolution(float[][][] convolved, float[][][] original) {
 		int slices = convolved.length;
 		int height = convolved[0].length;
 		int width = convolved[0][0].length / 2;
@@ -750,7 +779,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// find error of a deconvolved image
-	public double getError(float[][][][] guess, float[][][][] image, float[][][] psfMat) {
+	static public double getError(float[][][][] guess, float[][][][] image, float[][][] psfMat) {
 		int frames = image.length;
 		int slices = image[0].length;
 		int height = image[0][0].length;
@@ -778,7 +807,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// find minimum of real matrix
-	public float minOf(float[][][] mat) {
+	static public float minOf(float[][][] mat) {
 		float ret = mat[0][0][0];
 		for (int i = 0; i < mat.length; i++)
 			for (int j = 0; j < mat[0].length; j++)
@@ -791,7 +820,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// find maximum of real matrix
-	public float maxOf(float[][][] mat) {
+	static public float maxOf(float[][][] mat) {
 		float ret = mat[0][0][0];
 		for (int i = 0; i < mat.length; i++)
 			for (int j = 0; j < mat[0].length; j++)
@@ -804,7 +833,7 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// generate ID and title list of open images
-	public String[] imageList() {
+	static public String[] imageList() {
 		String[] titles;
 		String[] formatted;
 		
@@ -820,13 +849,13 @@ public class Deconvolve_Image_Utils {
 	}
 	
 	// gets ID from strings in the style generated above
-	public String getImageTitle(String selection) {
+	static public String getImageTitle(String selection) {
 		String after_colon = selection.split(": ")[1];
 		
 		return after_colon;
 	}
 	
-	public void resliceER (float[][][][] imageMat) {
+	static public void resliceER (float[][][][] imageMat) {
 		int frames = imageMat.length;
 		int slices = imageMat[0].length;
 		int height = imageMat[0][0].length;

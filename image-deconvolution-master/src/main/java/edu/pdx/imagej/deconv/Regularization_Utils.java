@@ -134,21 +134,28 @@ public class Regularization_Utils {
 	private void initializePmatFT() {
 		fft3D.complexForward(psfMat);
 		float[][][] auxiliaryMat = new float[slices][height][2*width];
+		float[][][] auxiliaryMat2 = new float[slices][height][2*width];
 		for (int i = 0; i < slices; i++)
 			for (int j = 0; j < height; j++)
 				for (int k = 0; k < width; k++) {
 					auxiliaryMat[i][j][2*k] = 1;
 					auxiliaryMat[i][j][2*k + 1] = 0;
 				}
-		auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.matrixOperations(diu.complexConj(L1), L1, "multiply"), "add");
-		auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.matrixOperations(diu.complexConj(L2), L2, "multiply"), "add");
-		auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.matrixOperations(diu.complexConj(L3), L3, "multiply"), "add");
-		auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.matrixOperations(diu.complexConj(L4), L4, "multiply"), "add");
-		auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.matrixOperations(diu.complexConj(L5), L5, "multiply"), "add");
-		auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.matrixOperations(diu.complexConj(L6), L6, "multiply"), "add");
+		diu.matrixOperations(diu.complexConj(L1), L1, auxiliaryMat2, "multiply");
+		diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
+		diu.matrixOperations(diu.complexConj(L2), L2, auxiliaryMat2, "multiply");
+		diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
+		diu.matrixOperations(diu.complexConj(L3), L3, auxiliaryMat2, "multiply");
+		diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
+		diu.matrixOperations(diu.complexConj(L4), L4, auxiliaryMat2, "multiply");
+		diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
+		diu.matrixOperations(diu.complexConj(L5), L5, auxiliaryMat2, "multiply");
+		diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
+		diu.matrixOperations(diu.complexConj(L6), L6, auxiliaryMat2, "multiply");
+		diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
 		
-		pMatFT = diu.matrixOperations(diu.complexConj(psfMat), psfMat, "multiply");
-		pMatFT = diu.matrixOperations(pMatFT, diu.scaleMat(auxiliaryMat, smooth), "add");
+		diu.matrixOperations(diu.complexConj(psfMat), psfMat, pMatFT, "multiply");
+		diu.matrixOperations(pMatFT, diu.scaleMat(auxiliaryMat, smooth), pMatFT, "add");
 		
 		float[] sqrt;
 		for (int i = 0; i < slices; i++)
@@ -158,7 +165,7 @@ public class Regularization_Utils {
 					piMatFT[i][j][2*k] = sqrt[0];
 					piMatFT[i][j][2*k + 1] = sqrt[1];
 				}
-		piMatFT = diu.matrixOperations(identityMat, piMatFT, "divide");
+		diu.matrixOperations(identityMat, piMatFT, piMatFT, "divide");
 		fft3D.complexInverse(piMatFT, true);
 	}
 	
@@ -166,9 +173,9 @@ public class Regularization_Utils {
 	private void initializeGuess() {
 		for (int i = 0; i < frames; i++) {
 			fft3D.complexForward(imgMat[i]);
-			guess[i] = diu.matrixOperations(identityMat, pMatFT, "divide");
-			guess[i] = diu.matrixOperations(guess[i], diu.complexConj(psfMat), "multiply");
-			guess[i] = diu.matrixOperations(guess[i], imgMat[i], "multiply");
+			diu.matrixOperations(identityMat, pMatFT, guess[i], "divide");
+			diu.matrixOperations(guess[i], diu.complexConj(psfMat), guess[i], "multiply");
+			diu.matrixOperations(guess[i], imgMat[i], guess[i], "multiply");
 			fft3D.complexInverse(guess[i], true);
 			fft3D.complexInverse(imgMat[i], true);
 		}
@@ -201,64 +208,64 @@ public class Regularization_Utils {
 		float[][][] auxiliaryMat;
 		for (int i = 0; i < frames; i++) {
 			if (tilde) {
-				wMatTilde[i] = diu.matrixOperations(guessTilde[i], guessTilde[i], "multiply");
+				diu.matrixOperations(guessTilde[i], guessTilde[i], wMatTilde[i], "multiply");
 				
 				auxiliaryMat = diu.fourierConvolve(L1, guessTilde[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMatTilde[i] = diu.matrixOperations(wMatTilde[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMatTilde[i], auxiliaryMat, wMatTilde[i], "add");
 				
 				auxiliaryMat = diu.fourierConvolve(L2, guessTilde[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMatTilde[i] = diu.matrixOperations(wMatTilde[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMatTilde[i], auxiliaryMat, wMatTilde[i], "add");
 				
 				auxiliaryMat = diu.fourierConvolve(L3, guessTilde[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMatTilde[i] = diu.matrixOperations(wMatTilde[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMatTilde[i], auxiliaryMat, wMatTilde[i], "add");
 				
 				auxiliaryMat = diu.fourierConvolve(L4, guessTilde[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMatTilde[i] = diu.matrixOperations(wMatTilde[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMatTilde[i], auxiliaryMat, wMatTilde[i], "add");
 				
 				auxiliaryMat = diu.fourierConvolve(L5, guessTilde[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMatTilde[i] = diu.matrixOperations(wMatTilde[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMatTilde[i], auxiliaryMat, wMatTilde[i], "add");
 				
 				auxiliaryMat = diu.fourierConvolve(L6, guessTilde[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMatTilde[i] = diu.matrixOperations(wMatTilde[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMatTilde[i], auxiliaryMat, wMatTilde[i], "add");
 				
 				wMatTilde[i] = diu.incrementComplex(wMatTilde[i], nonlinearity);
-				wMatTilde[i] = diu.matrixOperations(identityMat, wMatTilde[i], "divide");
+				diu.matrixOperations(identityMat, wMatTilde[i], wMatTilde[i], "divide");
 			}
 			else {
-				wMat[i] = diu.matrixOperations(guess[i], guess[i], "multiply");
+				diu.matrixOperations(guess[i], guess[i], wMat[i], "multiply");
 			
 				auxiliaryMat = diu.fourierConvolve(L1, guess[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMat[i] = diu.matrixOperations(wMat[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMat[i], auxiliaryMat, wMat[i], "add");
 			
 				auxiliaryMat = diu.fourierConvolve(L2, guess[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMat[i] = diu.matrixOperations(wMat[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMat[i], auxiliaryMat, wMat[i], "add");
 			
 				auxiliaryMat = diu.fourierConvolve(L3, guess[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMat[i] = diu.matrixOperations(wMat[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMat[i], auxiliaryMat, wMat[i], "add");
 			
 				auxiliaryMat = diu.fourierConvolve(L4, guess[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMat[i] = diu.matrixOperations(wMat[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMat[i], auxiliaryMat, wMat[i], "add");
 			
 				auxiliaryMat = diu.fourierConvolve(L5, guess[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMat[i] = diu.matrixOperations(wMat[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMat[i], auxiliaryMat, wMat[i], "add");
 			
 				auxiliaryMat = diu.fourierConvolve(L6, guess[i]);
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, auxiliaryMat, "multiply");
-				wMat[i] = diu.matrixOperations(wMat[i], auxiliaryMat, "add");
+				diu.matrixOperations(auxiliaryMat, auxiliaryMat, auxiliaryMat, "multiply");
+				diu.matrixOperations(wMat[i], auxiliaryMat, wMat[i], "add");
 			
 				wMat[i] = diu.incrementComplex(wMat[i], nonlinearity);
-				wMat[i] = diu.matrixOperations(identityMat, wMat[i], "divide");
+				diu.matrixOperations(identityMat, wMat[i], wMat[i], "divide");
 			}
 		}	
 	}
@@ -286,35 +293,52 @@ public class Regularization_Utils {
 		get_wMat(tilde);
 		get_nPrime(tilde);
 		float[][][] auxiliaryMat;
+		float[][][] auxiliaryMat2 = new float[slices][height][2*width];
 		
 		for (int i = 0; i < frames; i++) {
 			if (tilde == false) {
-				auxiliaryMat = diu.fourierConvolve(negativeIndex(L1), diu.matrixOperations(wMat[i], diu.fourierConvolve(L1, guess[i]), "multiply"));
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L2), diu.matrixOperations(wMat[i], diu.fourierConvolve(L2, guess[i]), "multiply")), "add");
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L3), diu.matrixOperations(wMat[i], diu.fourierConvolve(L3, guess[i]), "multiply")), "add");
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L4), diu.matrixOperations(wMat[i], diu.fourierConvolve(L4, guess[i]), "multiply")), "add");
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L5), diu.matrixOperations(wMat[i], diu.fourierConvolve(L5, guess[i]), "multiply")), "add");
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L6), diu.matrixOperations(wMat[i], diu.fourierConvolve(L6, guess[i]), "multiply")), "add");
+				diu.matrixOperations(wMat[i], diu.fourierConvolve(L1, guess[i]), auxiliaryMat2, "multiply");
+				auxiliaryMat = diu.fourierConvolve(negativeIndex(L1), auxiliaryMat2);
+				diu.matrixOperations(wMat[i], diu.fourierConvolve(L2, guess[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L2), auxiliaryMat2), auxiliaryMat, "add");
+				diu.matrixOperations(wMat[i], diu.fourierConvolve(L3, guess[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L3), auxiliaryMat2), auxiliaryMat, "add");
+				diu.matrixOperations(wMat[i], diu.fourierConvolve(L4, guess[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L4), auxiliaryMat2), auxiliaryMat, "add");
+				diu.matrixOperations(wMat[i], diu.fourierConvolve(L5, guess[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L5), auxiliaryMat2), auxiliaryMat, "add");
+				diu.matrixOperations(wMat[i], diu.fourierConvolve(L6, guess[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L6), auxiliaryMat2), auxiliaryMat, "add");
 			
 				energyMeasure[i] = diu.fourierConvolve(negativeIndex(psfMat), imgMat[i]);
-				energyMeasure[i] = diu.matrixOperations(energyMeasure[i], diu.fourierConvolve(negativeIndex(psfMat), diu.fourierConvolve(psfMat, guess[i])), "subtract");
-				energyMeasure[i] = diu.matrixOperations(energyMeasure[i], diu.scaleMat(diu.matrixOperations(nPrime[i], guess[i], "multiply"), 100*smooth), "subtract");
-				energyMeasure[i] = diu.matrixOperations(energyMeasure[i], diu.scaleMat(diu.matrixOperations(wMat[i], guess[i], "multiply"), smooth), "subtract");
-				energyMeasure[i] = diu.matrixOperations(energyMeasure[i], diu.scaleMat(auxiliaryMat, smooth), "subtract");
+				diu.matrixOperations(energyMeasure[i], diu.fourierConvolve(negativeIndex(psfMat), diu.fourierConvolve(psfMat, guess[i])), energyMeasure[i], "subtract");
+                diu.matrixOperations(nPrime[i], guess[i], auxiliaryMat2, "multiply");
+				diu.matrixOperations(energyMeasure[i], diu.scaleMat(auxiliaryMat2, 100*smooth), energyMeasure[i], "subtract");
+                diu.matrixOperations(wMat[i], guess[i], auxiliaryMat2, "multiply");
+				diu.matrixOperations(energyMeasure[i], diu.scaleMat(auxiliaryMat2, smooth), energyMeasure[i], "subtract");
+				diu.matrixOperations(energyMeasure[i], diu.scaleMat(auxiliaryMat, smooth), energyMeasure[i], "subtract");
 			}
 			else {
-				auxiliaryMat = diu.fourierConvolve(negativeIndex(L1), diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L1, guessTilde[i]), "multiply"));
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L2), diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L2, guessTilde[i]), "multiply")), "add");
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L3), diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L3, guessTilde[i]), "multiply")), "add");
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L4), diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L4, guessTilde[i]), "multiply")), "add");
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L5), diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L5, guessTilde[i]), "multiply")), "add");
-				auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L6), diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L6, guessTilde[i]), "multiply")), "add");
+				diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L1, guessTilde[i]), auxiliaryMat2, "multiply");
+				auxiliaryMat = diu.fourierConvolve(negativeIndex(L1), auxiliaryMat2);
+				diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L2, guessTilde[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L2), auxiliaryMat2), auxiliaryMat, "add");
+				diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L3, guessTilde[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L3), auxiliaryMat2), auxiliaryMat, "add");
+				diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L4, guessTilde[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L4), auxiliaryMat2), auxiliaryMat, "add");
+				diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L5, guessTilde[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L5), auxiliaryMat2), auxiliaryMat, "add");
+				diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L6, guessTilde[i]), auxiliaryMat2, "multiply");
+				diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(negativeIndex(L6), auxiliaryMat2), auxiliaryMat, "add");
 			
 				energyMeasureTilde[i] = diu.fourierConvolve(negativeIndex(psfMat), imgMat[i]);
-				energyMeasureTilde[i] = diu.matrixOperations(energyMeasureTilde[i], diu.fourierConvolve(negativeIndex(psfMat), diu.fourierConvolve(psfMat, guessTilde[i])), "subtract");
-				energyMeasureTilde[i] = diu.matrixOperations(energyMeasureTilde[i], diu.scaleMat(diu.matrixOperations(nPrimeTilde[i], guessTilde[i], "multiply"), 100*smooth), "subtract");
-				energyMeasureTilde[i] = diu.matrixOperations(energyMeasureTilde[i], diu.scaleMat(diu.matrixOperations(wMatTilde[i], guessTilde[i], "multiply"), smooth), "subtract");
-				energyMeasureTilde[i] = diu.matrixOperations(energyMeasureTilde[i], diu.scaleMat(auxiliaryMat, smooth), "subtract");
+				diu.matrixOperations(energyMeasureTilde[i], diu.fourierConvolve(negativeIndex(psfMat), diu.fourierConvolve(psfMat, guessTilde[i])), energyMeasureTilde[i], "subtract");
+                diu.matrixOperations(nPrimeTilde[i], guessTilde[i], auxiliaryMat2, "multiply");
+				diu.matrixOperations(energyMeasureTilde[i], diu.scaleMat(auxiliaryMat2, 100*smooth), energyMeasureTilde[i], "subtract");
+                diu.matrixOperations(wMatTilde[i], guessTilde[i], auxiliaryMat2, "multiply");
+				diu.matrixOperations(energyMeasureTilde[i], diu.scaleMat(auxiliaryMat2, smooth), energyMeasureTilde[i], "subtract");
+				diu.matrixOperations(energyMeasureTilde[i], diu.scaleMat(auxiliaryMat, smooth), energyMeasureTilde[i], "subtract");
 			}
 		}
 		
@@ -324,17 +348,24 @@ public class Regularization_Utils {
 	// get D matrix
 	public void get_dMat() {
 		float[][][] auxiliaryMat;
+		float[][][] auxiliaryMat2 = new float[slices][height][2*width];
 		for (int i = 0; i < frames; i++) {
-			auxiliaryMat = diu.fourierConvolve(diu.matrixOperations(negativeIndex(L1), negativeIndex(L1), "multiply"), wMat[i]);
-			auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(diu.matrixOperations(negativeIndex(L2), negativeIndex(L2), "multiply"), wMat[i]), "add");
-			auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(diu.matrixOperations(negativeIndex(L3), negativeIndex(L3), "multiply"), wMat[i]), "add");
-			auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(diu.matrixOperations(negativeIndex(L4), negativeIndex(L4), "multiply"), wMat[i]), "add");
-			auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(diu.matrixOperations(negativeIndex(L5), negativeIndex(L5), "multiply"), wMat[i]), "add");
-			auxiliaryMat = diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(diu.matrixOperations(negativeIndex(L6), negativeIndex(L6), "multiply"), wMat[i]), "add");
+			diu.matrixOperations(negativeIndex(L1), negativeIndex(L1), auxiliaryMat2, "multiply");
+			auxiliaryMat = diu.fourierConvolve(auxiliaryMat2, wMat[i]);
+			diu.matrixOperations(negativeIndex(L2), negativeIndex(L2), auxiliaryMat2, "multiply");
+			diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(auxiliaryMat2, wMat[i]), auxiliaryMat, "add");
+			diu.matrixOperations(negativeIndex(L3), negativeIndex(L3), auxiliaryMat2, "multiply");
+			diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(auxiliaryMat2, wMat[i]), auxiliaryMat, "add");
+			diu.matrixOperations(negativeIndex(L4), negativeIndex(L4), auxiliaryMat2, "multiply");
+			diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(auxiliaryMat2, wMat[i]), auxiliaryMat, "add");
+			diu.matrixOperations(negativeIndex(L5), negativeIndex(L5), auxiliaryMat2, "multiply");
+			diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(auxiliaryMat2, wMat[i]), auxiliaryMat, "add");
+			diu.matrixOperations(negativeIndex(L6), negativeIndex(L6), auxiliaryMat2, "multiply");
+			diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(auxiliaryMat2, wMat[i]), auxiliaryMat, "add");
 			
 			dMat[i] = diu.scaleMat(nPrime[i], 100*smooth);
-			dMat[i] = diu.matrixOperations(dMat[i], diu.scaleMat(wMat[i], smooth), "add");
-			dMat[i] = diu.matrixOperations(dMat[i], diu.scaleMat(auxiliaryMat, smooth), "add");
+			diu.matrixOperations(dMat[i], diu.scaleMat(wMat[i], smooth), dMat[i], "add");
+			diu.matrixOperations(dMat[i], diu.scaleMat(auxiliaryMat, smooth), dMat[i], "add");
 			dMat[i] = diu.incrementComplex(dMat[i], H0);
 		}
 	}
@@ -342,8 +373,8 @@ public class Regularization_Utils {
 	// get U matrix
 	public void get_uMat() {
 		for (int i = 0; i < frames; i++) {
-			uMat[i] = diu.matrixOperations(identityMat, dMat[i], "divide");
-			uMat[i] = diu.matrixOperations(uMat[i], diu.fourierConvolve(piMatFT, energyMeasure[i]), "multiply");
+			diu.matrixOperations(identityMat, dMat[i], uMat[i], "divide");
+			diu.matrixOperations(uMat[i], diu.fourierConvolve(piMatFT, energyMeasure[i]), uMat[i], "multiply");
 			uMat[i] = diu.fourierConvolve(piMatFT, uMat[i]);
 		}
 	}
@@ -351,7 +382,7 @@ public class Regularization_Utils {
 	// get guess(~)
 	public void get_guessTilde() {
 		for (int i = 0; i < frames; i++) {
-			guessTilde[i] = diu.matrixOperations(guess[i], diu.scaleMat(uMat[i], damping), "add");
+			diu.matrixOperations(guess[i], diu.scaleMat(uMat[i], damping), guessTilde[i], "add");
 		}
 	}
 	

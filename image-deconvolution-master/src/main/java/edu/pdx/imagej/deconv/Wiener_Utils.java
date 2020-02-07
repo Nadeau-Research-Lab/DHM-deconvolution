@@ -39,7 +39,7 @@ public class Wiener_Utils {
 		for (int i = 0; i < frames; i++) {
 			imgComplex[i] = diu.toFFTform(imgMat[i]);
 			if (get_intensity)
-				imgComplex[i] = diu.matrixOperations(imgComplex[i], imgComplex[i], "multiply");
+				diu.matrixOperations(imgComplex[i], imgComplex[i], imgComplex[i], "multiply");
 			fft3D.complexForward(imgComplex[i]);
 		}
 			
@@ -47,14 +47,16 @@ public class Wiener_Utils {
 		psfComplex = diu.scaleMat(psfMat, scale);
 		psfComplex = diu.toFFTform(psfComplex);
 		if (get_intensity)
-			psfComplex = diu.matrixOperations(psfComplex, psfComplex, "multiply");
+			diu.matrixOperations(psfComplex, psfComplex, psfComplex, "multiply");
 		fft3D.complexForward(psfComplex);	
 		float[][][] psfConj = diu.complexConj(psfComplex);
 		
+        float[][][] psf2 = new float[slices][height][width*2];
+        diu.matrixOperations(psfComplex, psfConj, psf2, "multiply");
 		for (int i = 0; i < frames; i++) {
 			// perform deconvolution operations
-			imgComplex[i] = diu.matrixOperations(psfConj, imgComplex[i], "multiply");	
-			imgComplex[i] = diu.matrixOperations(imgComplex[i], diu.incrementComplex(diu.matrixOperations(psfComplex, psfConj, "multiply"), beta), "divide");
+			diu.matrixOperations(psfConj, imgComplex[i], imgComplex[i], "multiply");	
+			diu.matrixOperations(imgComplex[i], diu.incrementComplex(psf2, beta), imgComplex[i], "divide");
 			fft3D.complexInverse(imgComplex[i], true);
 			
 			// put complex matrices back into real matrices and format image
@@ -84,7 +86,7 @@ public class Wiener_Utils {
 				imgComplex[i] = diu.toFFTformRect(imgAmpMat[i], imgPhaseMat[i]);
 			
 			if (get_intensity)
-				imgComplex[i] = diu.matrixOperations(imgComplex[i], diu.complexConj(imgComplex[i]), "multiply");
+				diu.matrixOperations(imgComplex[i], diu.complexConj(imgComplex[i]), imgComplex[i], "multiply");
 			
 			fft3D.complexForward(imgComplex[i]);
 		}
@@ -96,15 +98,17 @@ public class Wiener_Utils {
 			psfComplex = diu.toFFTformRect(psfAmpMat, psfPhaseMat);
 		
 		if (get_intensity)
-			psfComplex = diu.matrixOperations(psfComplex, diu.complexConj(psfComplex), "multiply");
+			diu.matrixOperations(psfComplex, diu.complexConj(psfComplex), psfComplex, "multiply");
 		
 		fft3D.complexForward(psfComplex);	
 		float[][][] psfConj = diu.complexConj(psfComplex);
 		
+        float[][][] psf2 = new float[slices][height][width*2];
+        diu.matrixOperations(psfComplex, psfConj, psf2, "multiply");
 		// same deconvolution procedure as above
 		for (int i = 0; i < frames; i++) {
-			imgComplex[i] = diu.matrixOperations(psfConj, imgComplex[i], "multiply");	
-			imgComplex[i] = diu.matrixOperations(imgComplex[i], diu.incrementComplex(diu.matrixOperations(psfComplex, psfConj, "multiply"), beta), "divide");
+			diu.matrixOperations(psfConj, imgComplex[i], imgComplex[i], "multiply");	
+			diu.matrixOperations(imgComplex[i], diu.incrementComplex(psf2, beta), imgComplex[i], "divide");
 			fft3D.complexInverse(imgComplex[i], true);
 			
 			// put complex matrices back into real matrices and format image

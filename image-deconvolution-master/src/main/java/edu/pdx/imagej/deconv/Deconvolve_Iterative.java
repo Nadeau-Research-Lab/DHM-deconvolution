@@ -523,11 +523,12 @@ public class Deconvolve_Iterative implements PlugInFilter {
 				
 				// perform deconvolution operations
 				blurredMat[j] = diu.fourierConvolve(imgMat[j], psf);
-				diu.fitConvolution(blurredMat[j], image[j]);
 				
-				imgMat[j] = diu.matrixOperations(imgMat[j], image[j], "multiply");
-				imgMat[j] = diu.matrixOperations(imgMat[j], diu.complexConj(blurredMat[j]), "multiply");
-				imgMat[j] = diu.matrixOperations(imgMat[j], diu.incrementComplex(diu.matrixOperations(blurredMat[j], diu.complexConj(blurredMat[j]), "multiply"), 1/SNR), "divide");
+				diu.matrixOperations(imgMat[j], image[j], imgMat[j], "multiply");
+				diu.matrixOperations(imgMat[j], diu.complexConj(blurredMat[j]), imgMat[j], "multiply");
+				diu.fitConvolution(blurredMat[j], image[j]);
+                diu.matrixOperations(blurredMat[j], diu.complexConj(blurredMat[j]), blurredMat[j], "multiply");
+				diu.matrixOperations(imgMat[j], diu.incrementComplex(blurredMat[j], 1/SNR), imgMat[j], "divide");
 			}
 			if (plot_error)
 				errors[i] = getError(diu.getAmplitudeMat(blurredMat), diu.getAmplitudeMat(image));

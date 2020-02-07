@@ -44,7 +44,7 @@ public class Wiener_Utils {
         }
             
         // do the same with PSF
-        psfComplex = diu.scaleMat(psfMat, scale);
+        diu.scaleMat(psfMat, psfComplex, scale);
         psfComplex = diu.toFFTform(psfComplex);
         if (get_intensity)
             diu.matrixOperations(psfComplex, psfComplex, psfComplex, "multiply");

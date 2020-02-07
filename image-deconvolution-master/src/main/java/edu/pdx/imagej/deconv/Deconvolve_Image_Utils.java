@@ -535,36 +535,31 @@ public class Deconvolve_Image_Utils {
     }
     
     // scales a  matrix (can be real or complex)
-    static public float[][][] scaleMat(float[][][] mat, float scale) {
+    static public void scaleMat(float[][][] mat, float[][][] retMat, float scale) {
         int slices = mat.length;
         int height = mat[0].length;
         int width = mat[0][0].length;
-        float[][][] retMat = new float[slices][height][width];
+        //float[][][] retMat = new float[slices][height][width];
         
         for (int i = 0; i < slices; i++)
             for (int j = 0; j < height; j++)
                 for (int k = 0; k < width; k++)
                     retMat[i][j][k] = scale * mat[i][j][k];
-        
-        return retMat;
     }
     
     // scales a  matrix (can be real or complex)
-    static public float[][][][] scaleMat(float[][][][] mat, float scale) {
+    static public void scaleMat(float[][][][] mat, float[][][][] retMat, float scale) {
         int frames = mat.length;
         int slices = mat[0].length;
         int height = mat[0][0].length;
         int width = mat[0][0][0].length;
-        float[][][][] retMat = new float[frames][slices][height][width];
+        //float[][][][] retMat = new float[frames][slices][height][width];
         
         for (int i = 0; i < frames; i++)
             for (int j = 0; j < slices; j++)
                 for (int k = 0; k < height; k++) 
                     for (int l = 0; l < width; l++)
                         retMat[i][j][k][l] = scale * mat[i][j][k][l];
-                
-        
-        return retMat;
     }
     
     // covert 3D matrix to ImagePlus image

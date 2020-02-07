@@ -162,7 +162,8 @@ public class Regularization_Utils {
         
         diu.complexConj(psfMat, auxiliaryMat2);
         diu.matrixOperations(auxiliaryMat2, psfMat, pMatFT, "multiply");
-        diu.matrixOperations(pMatFT, diu.scaleMat(auxiliaryMat, smooth), pMatFT, "add");
+        diu.scaleMat(auxiliaryMat, auxiliaryMat, smooth);
+        diu.matrixOperations(pMatFT, auxiliaryMat, pMatFT, "add");
         
         float[] sqrt;
         for (int i = 0; i < slices; i++)
@@ -322,10 +323,13 @@ public class Regularization_Utils {
                 energyMeasure[i] = diu.fourierConvolve(negativeIndex(psfMat), imgMat[i]);
                 diu.matrixOperations(energyMeasure[i], diu.fourierConvolve(negativeIndex(psfMat), diu.fourierConvolve(psfMat, guess[i])), energyMeasure[i], "subtract");
                 diu.matrixOperations(nPrime[i], guess[i], auxiliaryMat2, "multiply");
-                diu.matrixOperations(energyMeasure[i], diu.scaleMat(auxiliaryMat2, 100*smooth), energyMeasure[i], "subtract");
+                diu.scaleMat(auxiliaryMat2, auxiliaryMat2, 100*smooth);
+                diu.matrixOperations(energyMeasure[i], auxiliaryMat2, energyMeasure[i], "subtract");
                 diu.matrixOperations(wMat[i], guess[i], auxiliaryMat2, "multiply");
-                diu.matrixOperations(energyMeasure[i], diu.scaleMat(auxiliaryMat2, smooth), energyMeasure[i], "subtract");
-                diu.matrixOperations(energyMeasure[i], diu.scaleMat(auxiliaryMat, smooth), energyMeasure[i], "subtract");
+                diu.scaleMat(auxiliaryMat2, auxiliaryMat2, smooth);
+                diu.matrixOperations(energyMeasure[i], auxiliaryMat2, energyMeasure[i], "subtract");
+                diu.scaleMat(auxiliaryMat, auxiliaryMat, smooth);
+                diu.matrixOperations(energyMeasure[i], auxiliaryMat, energyMeasure[i], "subtract");
             }
             else {
                 diu.matrixOperations(wMatTilde[i], diu.fourierConvolve(L1, guessTilde[i]), auxiliaryMat2, "multiply");
@@ -344,10 +348,13 @@ public class Regularization_Utils {
                 energyMeasureTilde[i] = diu.fourierConvolve(negativeIndex(psfMat), imgMat[i]);
                 diu.matrixOperations(energyMeasureTilde[i], diu.fourierConvolve(negativeIndex(psfMat), diu.fourierConvolve(psfMat, guessTilde[i])), energyMeasureTilde[i], "subtract");
                 diu.matrixOperations(nPrimeTilde[i], guessTilde[i], auxiliaryMat2, "multiply");
-                diu.matrixOperations(energyMeasureTilde[i], diu.scaleMat(auxiliaryMat2, 100*smooth), energyMeasureTilde[i], "subtract");
+                diu.scaleMat(auxiliaryMat2, auxiliaryMat2, 100*smooth);
+                diu.matrixOperations(energyMeasureTilde[i], auxiliaryMat2, energyMeasureTilde[i], "subtract");
                 diu.matrixOperations(wMatTilde[i], guessTilde[i], auxiliaryMat2, "multiply");
-                diu.matrixOperations(energyMeasureTilde[i], diu.scaleMat(auxiliaryMat2, smooth), energyMeasureTilde[i], "subtract");
-                diu.matrixOperations(energyMeasureTilde[i], diu.scaleMat(auxiliaryMat, smooth), energyMeasureTilde[i], "subtract");
+                diu.scaleMat(auxiliaryMat2, auxiliaryMat2, smooth);
+                diu.matrixOperations(energyMeasureTilde[i], auxiliaryMat2, energyMeasureTilde[i], "subtract");
+                diu.scaleMat(auxiliaryMat, auxiliaryMat, smooth);
+                diu.matrixOperations(energyMeasureTilde[i], auxiliaryMat, energyMeasureTilde[i], "subtract");
             }
         }
         
@@ -372,9 +379,11 @@ public class Regularization_Utils {
             diu.matrixOperations(negativeIndex(L6), negativeIndex(L6), auxiliaryMat2, "multiply");
             diu.matrixOperations(auxiliaryMat, diu.fourierConvolve(auxiliaryMat2, wMat[i]), auxiliaryMat, "add");
             
-            dMat[i] = diu.scaleMat(nPrime[i], 100*smooth);
-            diu.matrixOperations(dMat[i], diu.scaleMat(wMat[i], smooth), dMat[i], "add");
-            diu.matrixOperations(dMat[i], diu.scaleMat(auxiliaryMat, smooth), dMat[i], "add");
+            diu.scaleMat(nPrime[i], dMat[i], 100*smooth);
+            diu.scaleMat(wMat[i], auxiliaryMat2, smooth);
+            diu.matrixOperations(dMat[i], wMat[i], dMat[i], "add");
+            diu.scaleMat(auxiliaryMat, auxiliaryMat, smooth);
+            diu.matrixOperations(dMat[i], auxiliaryMat, dMat[i], "add");
             diu.incrementComplex(dMat[i], dMat[i], H0);
         }
     }
@@ -390,8 +399,10 @@ public class Regularization_Utils {
     
     // get guess(~)
     public void get_guessTilde() {
+        float[][][] auxiliaryMat = new float[slices][height][2*width];
         for (int i = 0; i < frames; i++) {
-            diu.matrixOperations(guess[i], diu.scaleMat(uMat[i], damping), guessTilde[i], "add");
+            diu.scaleMat(uMat[i], auxiliaryMat, damping);
+            diu.matrixOperations(guess[i], auxiliaryMat, guessTilde[i], "add");
         }
     }
     

@@ -526,6 +526,7 @@ public class Deconvolve_Iterative implements PlugInFilter {
         int count = 0;
         imgMat = new float[image.length][image[0].length][image[0][0].length][image[0][0][0].length];
         float[][][][] blurredMat = new float[image.length][image[0].length][image[0][0].length][image[0][0][0].length];
+        float[][][] blurredMatConj = new float[image[0].length][image[0][0].length][image[0][0][0].length];
         imgMat = diu.scaleMat(image, 1);
         for (int i = 0; i < iterations; i++) {
             for (int j = 0; j < image.length; j++) {
@@ -536,9 +537,10 @@ public class Deconvolve_Iterative implements PlugInFilter {
                 blurredMat[j] = diu.fourierConvolve(imgMat[j], psf);
                 
                 diu.matrixOperations(imgMat[j], image[j], imgMat[j], "multiply");
-                diu.matrixOperations(imgMat[j], diu.complexConj(blurredMat[j]), imgMat[j], "multiply");
+                diu.complexConj(blurredMat[j], blurredMatConj);
+                diu.matrixOperations(imgMat[j], blurredMatConj, imgMat[j], "multiply");
                 diu.fitConvolution(blurredMat[j], image[j]);
-                diu.matrixOperations(blurredMat[j], diu.complexConj(blurredMat[j]), blurredMat[j], "multiply");
+                diu.matrixOperations(blurredMat[j], blurredMatConj, blurredMat[j], "multiply");
                 diu.incrementComplex(blurredMat[j], blurredMat[j], 1/SNR);
                 diu.matrixOperations(imgMat[j], blurredMat[j], imgMat[j], "divide");
             }

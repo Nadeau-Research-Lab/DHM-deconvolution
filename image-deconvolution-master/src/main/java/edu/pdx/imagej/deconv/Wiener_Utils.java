@@ -49,7 +49,8 @@ public class Wiener_Utils {
         if (get_intensity)
             diu.matrixOperations(psfComplex, psfComplex, psfComplex, "multiply");
         fft3D.complexForward(psfComplex);   
-        float[][][] psfConj = diu.complexConj(psfComplex);
+        float[][][] psfConj = new float[slices][height][width*2];
+        diu.complexConj(psfComplex, psfConj);
         
         float[][][] psf2 = new float[slices][height][width*2];
         diu.matrixOperations(psfComplex, psfConj, psf2, "multiply");
@@ -78,6 +79,7 @@ public class Wiener_Utils {
     // treats deconvolution with complex numbers
     public void deconvolve(float[][][][] imgAmpMat, float[][][][] imgPhaseMat, float[][][] psfAmpMat, float[][][] psfPhaseMat, boolean getError, String style) {
         imgPhase = new float[frames][slices][height][width];
+        float[][][] psfConj = new float[slices][height][width*2];
         
         // construct complex matrices based on form of input data
         for (int i = 0; i < frames; i++) {
@@ -87,7 +89,8 @@ public class Wiener_Utils {
                 imgComplex[i] = diu.toFFTformRect(imgAmpMat[i], imgPhaseMat[i]);
             
             if (get_intensity)
-                diu.matrixOperations(imgComplex[i], diu.complexConj(imgComplex[i]), imgComplex[i], "multiply");
+                diu.complexConj(imgComplex[i], psfConj); // This is a reused variable, it is NOT psfConj!
+                diu.matrixOperations(imgComplex[i], psfConj, imgComplex[i], "multiply");
             
             fft3D.complexForward(imgComplex[i]);
         }
@@ -99,10 +102,11 @@ public class Wiener_Utils {
             psfComplex = diu.toFFTformRect(psfAmpMat, psfPhaseMat);
         
         if (get_intensity)
-            diu.matrixOperations(psfComplex, diu.complexConj(psfComplex), psfComplex, "multiply");
+            diu.complexConj(psfComplex, psfConj);
+            diu.matrixOperations(psfComplex, psfConj, psfComplex, "multiply");
         
         fft3D.complexForward(psfComplex);   
-        float[][][] psfConj = diu.complexConj(psfComplex);
+        diu.complexConj(psfComplex, psfConj);
         
         float[][][] psf2 = new float[slices][height][width*2];
         diu.matrixOperations(psfComplex, psfConj, psf2, "multiply");

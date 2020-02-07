@@ -520,11 +520,11 @@ public class Deconvolve_Image_Utils {
     }
     
     // returns the complex conjugate of the input matrix
-    static public float[][][] complexConj(float[][][] mat) {
+    static public void complexConj(float[][][] mat, float[][][] retMat) {
         int slices = mat.length;
         int height = mat[0].length;
         int width = (int)(mat[0][0].length / 2);
-        float[][][] retMat = new float[slices][height][2*width];
+        //float[][][] retMat = new float[slices][height][2*width];
         
         for (int i = 0; i < slices; i++)
             for (int j = 0; j < height; j++)
@@ -532,8 +532,6 @@ public class Deconvolve_Image_Utils {
                     retMat[i][j][2*k] = mat[i][j][2*k];
                     retMat[i][j][2*k + 1] = (-1)*mat[i][j][2*k + 1];
                 }
-        
-        return retMat;
     }
     
     // scales a  matrix (can be real or complex)

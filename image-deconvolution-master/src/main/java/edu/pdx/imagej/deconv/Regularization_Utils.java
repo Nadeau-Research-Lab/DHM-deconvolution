@@ -141,20 +141,27 @@ public class Regularization_Utils {
                     auxiliaryMat[i][j][2*k] = 1;
                     auxiliaryMat[i][j][2*k + 1] = 0;
                 }
-        diu.matrixOperations(diu.complexConj(L1), L1, auxiliaryMat2, "multiply");
+        diu.complexConj(L1, auxiliaryMat2);
+        diu.matrixOperations(auxiliaryMat2, L1, auxiliaryMat2, "multiply");
         diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
-        diu.matrixOperations(diu.complexConj(L2), L2, auxiliaryMat2, "multiply");
+        diu.complexConj(L2, auxiliaryMat2);
+        diu.matrixOperations(auxiliaryMat2, L2, auxiliaryMat2, "multiply");
         diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
-        diu.matrixOperations(diu.complexConj(L3), L3, auxiliaryMat2, "multiply");
+        diu.complexConj(L3, auxiliaryMat2);
+        diu.matrixOperations(auxiliaryMat2, L3, auxiliaryMat2, "multiply");
         diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
-        diu.matrixOperations(diu.complexConj(L4), L4, auxiliaryMat2, "multiply");
+        diu.complexConj(L4, auxiliaryMat2);
+        diu.matrixOperations(auxiliaryMat2, L4, auxiliaryMat2, "multiply");
         diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
-        diu.matrixOperations(diu.complexConj(L5), L5, auxiliaryMat2, "multiply");
+        diu.complexConj(L5, auxiliaryMat2);
+        diu.matrixOperations(auxiliaryMat2, L5, auxiliaryMat2, "multiply");
         diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
-        diu.matrixOperations(diu.complexConj(L6), L6, auxiliaryMat2, "multiply");
+        diu.complexConj(L6, auxiliaryMat2);
+        diu.matrixOperations(auxiliaryMat2, L6, auxiliaryMat2, "multiply");
         diu.matrixOperations(auxiliaryMat, auxiliaryMat2, auxiliaryMat, "add");
         
-        diu.matrixOperations(diu.complexConj(psfMat), psfMat, pMatFT, "multiply");
+        diu.complexConj(psfMat, auxiliaryMat2);
+        diu.matrixOperations(auxiliaryMat2, psfMat, pMatFT, "multiply");
         diu.matrixOperations(pMatFT, diu.scaleMat(auxiliaryMat, smooth), pMatFT, "add");
         
         float[] sqrt;
@@ -171,10 +178,12 @@ public class Regularization_Utils {
     
     // get g0
     private void initializeGuess() {
+        float[][][] auxiliaryMat = new float[slices][height][2*width];
+        diu.complexConj(psfMat, auxiliaryMat);
         for (int i = 0; i < frames; i++) {
             fft3D.complexForward(imgMat[i]);
             diu.matrixOperations(identityMat, pMatFT, guess[i], "divide");
-            diu.matrixOperations(guess[i], diu.complexConj(psfMat), guess[i], "multiply");
+            diu.matrixOperations(guess[i], auxiliaryMat, guess[i], "multiply");
             diu.matrixOperations(guess[i], imgMat[i], guess[i], "multiply");
             fft3D.complexInverse(guess[i], true);
             fft3D.complexInverse(imgMat[i], true);

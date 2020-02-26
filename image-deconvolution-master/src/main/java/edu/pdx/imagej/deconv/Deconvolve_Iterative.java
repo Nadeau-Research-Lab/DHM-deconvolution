@@ -319,31 +319,35 @@ public class Deconvolve_Iterative implements PlugInFilter {
     
     // save deconvolved images by frame from stored images
     public void save_from_files() {
+        if (decon_choice == "Standard") psfMat = diu.toFFTform(psfMat);
         ampMat = new float[1][slices][height][width];
         if (decon_choice != "Standard")
             phaseMat = new float[1][slices][height][width];
         
         // loop through images in folder
         for (int i = 0; i < stack_list.length; i++) {
+            System.gc();
             IJ.showStatus("Processing frame " + Integer.toString(i + 1) + " of " + Integer.toString(stack_list.length) + "...");
             ImagePlus tempImg = IJ.openImage(stack_path + stack_list[i]);
             ampMat = diu.getMatrix4D(tempImg);
+            tempImg.flush();
             tempImg.close();
             
             // deconvolve and save in appropriate folder
             if (decon_choice == "Standard") {
                 ampMat = diu.toFFTform(ampMat);
-                psfMat = diu.toFFTform(psfMat);
                 deconvolve(ampMat, psfMat);
                 
                 tempImg = diu.reassign(diu.getAmplitudeMat(imgMat), choice, Integer.toString(i));
                 tempImg.setCalibration(cal);
                 IJ.saveAsTiff(tempImg, save_path + Integer.toString(i) + ".tif");
+                tempImg.flush();
                 tempImg.close();
             }
             else if (decon_choice == "Complex (Polar)") {
                 ImagePlus phaseImg = IJ.openImage(stack_path_phase + stack_list_phase[i]);
                 phaseMat = diu.getMatrix4D(phaseImg);
+                tempImg.flush();
                 phaseImg.close();
                 
                 deconvolve(diu.toFFTform(ampMat, phaseMat), diu.toFFTform(psfMat, psfPhaseMat));
@@ -363,11 +367,13 @@ public class Deconvolve_Iterative implements PlugInFilter {
                 
                 tempImg.setCalibration(cal);
                 IJ.saveAsTiff(tempImg, save_path + "Phase" + divisor + Integer.toString(i) + ".tif");
+                tempImg.flush();
                 tempImg.close();
             }
             else {
                 ImagePlus imImg = IJ.openImage(stack_path_phase + stack_list_phase[i]);
                 phaseMat = diu.getMatrix4D(imImg);
+                tempImg.flush();
                 imImg.close();
                 
                 deconvolve(diu.toFFTformRect(ampMat, phaseMat), diu.toFFTformRect(psfMat, psfPhaseMat));
@@ -379,6 +385,7 @@ public class Deconvolve_Iterative implements PlugInFilter {
                 tempImg = diu.reassign(diu.getImMat(imgMat), choice, Integer.toString(i));
                 tempImg.setCalibration(cal);
                 IJ.saveAsTiff(tempImg, save_path + "Imaginary" + divisor + Integer.toString(i) + ".tif");
+                tempImg.flush();
                 tempImg.close();
             }
             
@@ -459,16 +466,19 @@ public class Deconvolve_Iterative implements PlugInFilter {
             IJ.showStatus("Processing frame " + Integer.toString(i + 1) + " of " + Integer.toString(stack_list.length) + "...");
             ImagePlus tempImg = IJ.openImage(stack_path + stack_list[i]);
             ampMat = diu.getMatrix4D(tempImg);
+            tempImg.flush();
             tempImg.close();
             
             if (decon_choice == "Standard") {
                 deconvolve(diu.toFFTform(ampMat), diu.toFFTform(psfMat));
                 objMat[i] = diu.getAmplitudeMat(imgMat)[0];
+                tempImg.flush();
                 tempImg.close();
             }
             else if (decon_choice == "Complex (Polar)") {
                 ImagePlus phaseImg = IJ.openImage(stack_path_phase + stack_list_phase[i]);
                 phaseMat = diu.getMatrix4D(phaseImg);
+                tempImg.flush();
                 phaseImg.close();
                 
                 deconvolve(diu.toFFTform(ampMat, phaseMat), diu.toFFTform(psfMat, psfPhaseMat));
@@ -478,6 +488,7 @@ public class Deconvolve_Iterative implements PlugInFilter {
             else {
                 ImagePlus imImg = IJ.openImage(stack_path_phase + stack_list_phase[i]);
                 phaseMat = diu.getMatrix4D(imImg);
+                tempImg.flush();
                 imImg.close();
                 
                 deconvolve(diu.toFFTformRect(ampMat, phaseMat), diu.toFFTformRect(psfMat, psfPhaseMat));
